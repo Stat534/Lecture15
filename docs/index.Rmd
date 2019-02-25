@@ -1,0 +1,72 @@
+---
+title: "Lecture 15: Spatial Prediction and Model Selection"
+output:
+  revealjs::revealjs_presentation:
+    theme: white
+    center: true
+    transition: none
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+```
+
+# Class Intro
+
+## Intro Questions 
+- Spatial Generalized Linear Models: Explain how the spatial structure is incorporated into these models.
+
+- For Today:
+    - Spatial Prediction and Model Selection
+
+# Kriging Predictions
+
+## Multivariate Normal Theory
+- For consider partioning a multivariate normal distribution into two parts
+$$\begin{pmatrix}
+\boldsymbol{Y_1}\\
+\boldsymbol{Y_2}
+\end{pmatrix} = 
+N \left( \begin{pmatrix}
+\boldsymbol{\mu_1}\\
+\boldsymbol{\mu_2}
+\end{pmatrix}, \begin{pmatrix}
+\Omega_{11} \;\;\Omega_{12}\\
+\Omega_{21} \;\;\Omega_{22}\end{pmatrix}\right),$$
+where $\Omega_{12} = \Omega_{21}^T$
+
+## Conditional Multivariate Normal Theory
+- The conditional distribution, $p(\boldsymbol{Y_1}|
+\boldsymbol{Y_2})$ is normal with:
+
+- $E[\boldsymbol{Y_1}|
+\boldsymbol{Y_2}] = \boldsymbol{\mu_1} + \Omega_{12} \Omega_{22}^{-1} (\boldsymbol{Y_2} - \mu_2)$
+
+- $Var[\boldsymbol{Y_1}|
+\boldsymbol{Y_2}] = \Omega_{11} - \Omega_{12} \Omega_{22}^{-1} \Omega_{21}$
+
+- Typically, $\boldsymbol{\mu_1}$ requires an estimate of $\boldsymbol{\beta}$ and likewise $\Omega$ is a product of $\sigma^2$, $\phi$, and $\tau^2$.
+
+- Strictly speaking we can write this distribution as $p(\boldsymbol{Y_1}|
+\boldsymbol{Y_2}, \boldsymbol{\beta}, \sigma^2, \phi, \tau^2)$
+
+# Cross Validation Framework
+
+## Cross Validation Motivation
+
+```{r}
+load('CO_Air.Rdata')
+pal <- colorFactor(c("green", "red"), domain = c(FALSE, TRUE))
+leaflet(CO) %>% addTiles() %>% 
+  addCircleMarkers(lng = ~Longitude, lat = ~Latitude,
+    color = ~pal(Exceedance)) %>%  addCircleMarkers(lng = ~Longitude[1], lat = ~Latitude[1], radius = 15)
+```
+
+## Prediction
+- We will use cross-validation or a test/training approach to compare predictive models.
+- Consider three data structures: continuous, count, and binary; how should we evaluate predictions in these situations?

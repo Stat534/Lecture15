@@ -5679,16 +5679,84 @@ N \left( \begin{pmatrix}
 <li class="fragment"><p>Typically, <span class="math inline">\(\boldsymbol{\mu_1}\)</span> requires an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span> and likewise <span class="math inline">\(\Omega\)</span> is a product of <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(\phi\)</span>, and <span class="math inline">\(\tau^2\)</span>.</p></li>
 <li class="fragment"><p>Strictly speaking we can write this distribution as <span class="math inline">\(p(\boldsymbol{Y_1}| \boldsymbol{Y_2}, \boldsymbol{\beta}, \sigma^2, \phi, \tau^2)\)</span></p></li>
 </ul>
+</section><section id="posterior-predictive-distribution" class="slide level2">
+<h2>Posterior Predictive Distribution</h2>
+<ul>
+<li class="fragment">The (posterior) predictive distribution <span class="math inline">\(p(Y(\boldsymbol{s_0})|y)\)</span> can be written as <span class="math display">\[p(Y(\boldsymbol{s_0})|y) = \int p(Y(\boldsymbol{s_0})|y, \boldsymbol{\theta})p( \boldsymbol{\theta}|y) d  \boldsymbol{\theta}\]</span> where <span class="math inline">\(\boldsymbol{\theta} = \{\boldsymbol{\beta}, \sigma^2, \phi, \tau^2\}\)</span>.</li>
+<li class="fragment">The posterior predictive distribution gives a probabilistic forecast for the outcome of interest that does not depend on any unknown parameters.</li>
+</ul>
 </section></section>
 <section><section id="cross-validation-framework" class="title-slide slide level1"><h1>Cross Validation Framework</h1></section><section id="cross-validation-motivation" class="slide level2">
 <h2>Cross Validation Motivation</h2>
-<div id="htmlwidget-b6ad14f0423acb9a7f07" style="width:768px;height:576px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b6ad14f0423acb9a7f07">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[38.342743,40.086944,37.350054,40.329253,37.1984,39.130575,39.43806,37.10258,40.038889,39.54182,37.13678,38.8764,37.30389,37.205862,39.4125,38.9564,39.240278,39.794391,40.27813,39.541515,40.070016,39.912799,39.743724,40.592543,39.638781,40.57747,39.534488,39.77949,39.751184,39.567887,39.838119,38.853097,38.958341,40.386368,39.638522],[-108.99495,-108.761389,-108.592334,-108.49424,-108.49046,-108.313835,-108.02611,-107.870219,-107.8475,-107.784125,-107.62863,-107.6023,-107.484167,-107.254118,-107.23056,-106.9858,-105.983056,-105.76398,-105.54564,-105.29841,-105.220238,-105.188587,-105.177989,-105.141122,-105.13948,-105.07892,-105.070358,-105.00518,-104.987625,-104.957193,-104.94984,-104.901289,-104.817215,-104.73744,-104.569335],10,null,null,{"interactive":true,"className":"","stroke":true,"color":["#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#00FF00","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#00FF00","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[38.342743,-108.99495,15,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[37.10258,40.592543],"lng":[-108.99495,-104.569335]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-232229b13deb2f2a5afc" style="width:768px;height:576px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-232229b13deb2f2a5afc">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[38.342743,40.086944,37.350054,40.329253,37.1984,39.130575,39.43806,37.10258,40.038889,39.54182,37.13678,38.8764,37.30389,37.205862,39.4125,38.9564,39.240278,39.794391,40.27813,39.541515,40.070016,39.912799,39.743724,40.592543,39.638781,40.57747,39.534488,39.77949,39.751184,39.567887,39.838119,38.853097,38.958341,40.386368,39.638522],[-108.99495,-108.761389,-108.592334,-108.49424,-108.49046,-108.313835,-108.02611,-107.870219,-107.8475,-107.784125,-107.62863,-107.6023,-107.484167,-107.254118,-107.23056,-106.9858,-105.983056,-105.76398,-105.54564,-105.29841,-105.220238,-105.188587,-105.177989,-105.141122,-105.13948,-105.07892,-105.070358,-105.00518,-104.987625,-104.957193,-104.94984,-104.901289,-104.817215,-104.73744,-104.569335],10,null,null,{"interactive":true,"className":"","stroke":true,"color":["#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#00FF00","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#00FF00","#FF0000","#00FF00","#FF0000","#FF0000","#00FF00","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000","#FF0000"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[38.342743,-108.99495,15,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[37.10258,40.592543],"lng":[-108.99495,-104.569335]}},"evals":[],"jsHooks":[]}</script>
 </section><section id="prediction" class="slide level2">
 <h2>Prediction</h2>
 <ul>
 <li class="fragment">We will use cross-validation or a test/training approach to compare predictive models.</li>
 <li class="fragment">Consider three data structures: continuous, count, and binary; how should we evaluate predictions in these situations?</li>
+</ul>
+</section><section id="loss-functions" class="slide level2">
+<h2>Loss Functions</h2>
+<ul>
+<li class="fragment">Loss functions penalize predictions that deviate from the true values.</li>
+<li class="fragment">For continuous or count data, squared error loss and absolute error loss are common.</li>
+<li class="fragment">With binary data, a zero-one loss is frequently used.</li>
+<li class="fragment">However, these metrics are all focused on point estimates.</li>
+</ul>
+</section><section id="distributional-loss-functions" class="slide level2">
+<h2>Distributional Loss Functions</h2>
+<ul>
+<li class="fragment">If we think about outcomes distributionally, empirical coverage probability can be considered. For instance, our 95 % prediction intervals should, on average, have roughly 95 % coverage.</li>
+<li class="fragment">With interval predictions, the goal is to have a concentrated predictive distribution around the outcome.</li>
+<li class="fragment">The Continuous Rank Probability Score (CRPS) defined as <span class="math display">\[CRPS(F,y) = \int_{-\infty}^{\infty}\left(F(u) - 1(u \geq y) \right)^2 du,\]</span> where <span class="math inline">\(F\)</span> is the CDF of the predictive distribution, is a metric that measures distance between an observed value and a distribution.</li>
+</ul>
+</section><section id="crps" class="slide level2">
+<h2>CRPS</h2>
+<p>Consider four situations and sketch the predictive distribution and the resultant CRPS for each scenario. How does the MSE function in each setting?</p>
+<ol type="1">
+<li class="fragment">Narrow predictive interval centered around outcome.</li>
+<li class="fragment">Wide predictive interval centered around outcome.</li>
+<li class="fragment">Narrow predictictive interval with outcome in tail.</li>
+<li class="fragment">Wide predictive interval with outcome in tail.</li>
+</ol>
+</section></section>
+<section><section id="model-comparison-exercise" class="title-slide slide level1"><h1>Model Comparison Exercise</h1></section><section id="model-comparison-exercise-1" class="slide level2">
+<h2>Model Comparison Exercise</h2>
+<ol type="1">
+<li class="fragment">Fit two regression model to subset of Seattle data</li>
+<li class="fragment">Compute predictive distribution for different subset of Seattle data for two models</li>
+<li class="fragment">Compute Mean Absolute Deviation from predictions across two models</li>
+<li class="fragment">Compute CRPS for two models</li>
+<li class="fragment">Make and communicate a decision</li>
+</ol>
+</section><section id="fit-models" class="slide level2">
+<h2>1. Fit Models</h2>
+<p>For simplicity, we only consider two models for housing price:</p>
+<ol type="1">
+<li class="fragment">A regression model with a constant mean and</li>
+<li class="fragment">a regression model using <code>sqft_living</code> and <code>waterfront</code>.</li>
+</ol>
+</section><section id="predictive-distribution" class="slide level2">
+<h2>2. Predictive Distribution</h2>
+<p>Fit predictive distributions for these two models.</p>
+</section><section id="compute-mad" class="slide level2">
+<h2>3. Compute MAD</h2>
+<p>Compute Mean Absolute Deviation (MAD) from predictions across two models. You can use the posterior mean as your point estimates.</p>
+</section><section id="compute-crps" class="slide level2">
+<h2>4. Compute CRPS</h2>
+<ul>
+<li class="fragment">Hint use: <code>scoringRules</code> package</li>
+<li class="fragment"><a href="https://cran.r-project.org/web/packages/scoringRules/vignettes/gettingstarted.html">Package Overview</a></li>
+<li class="fragment"><code>crps_sample()</code> can be used with data and draws from the posterior predictive distribution.</li>
+</ul>
+</section><section id="discuss-results" class="slide level2">
+<h2>5. Discuss Results</h2>
+<p>So which model should we use? Why choose this model?</p>
+</section><section id="information-based-criteria" class="slide level2">
+<h2>Information Based Criteria</h2>
+<ul>
+<li class="fragment">We will discuss information based criteria as part of the areal data section.</li>
 </ul>
 </section></section>
     </div>

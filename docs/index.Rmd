@@ -14,6 +14,9 @@ knitr::opts_chunk$set(message = FALSE)
 library(dplyr)
 library(ggplot2)
 library(leaflet)
+library(readr)
+library(rjags)
+library(scoringRules)
 ```
 
 # Class Intro
@@ -55,6 +58,13 @@ where $\Omega_{12} = \Omega_{21}^T$
 - Strictly speaking we can write this distribution as $p(\boldsymbol{Y_1}|
 \boldsymbol{Y_2}, \boldsymbol{\beta}, \sigma^2, \phi, \tau^2)$
 
+## Posterior Predictive Distribution
+
+- The (posterior) predictive distribution $p(Y(\boldsymbol{s_0})|y)$ can be written as
+$$p(Y(\boldsymbol{s_0})|y) = \int p(Y(\boldsymbol{s_0})|y, \boldsymbol{\theta})p( \boldsymbol{\theta}|y) d  \boldsymbol{\theta}$$
+where  $\boldsymbol{\theta} = \{\boldsymbol{\beta}, \sigma^2, \phi, \tau^2\}$.
+- The posterior predictive distribution gives a probabilistic forecast for the outcome of interest that does not depend on any unknown parameters.
+
 # Cross Validation Framework
 
 ## Cross Validation Motivation
@@ -70,3 +80,162 @@ leaflet(CO) %>% addTiles() %>%
 ## Prediction
 - We will use cross-validation or a test/training approach to compare predictive models.
 - Consider three data structures: continuous, count, and binary; how should we evaluate predictions in these situations?
+
+## Loss Functions
+- Loss functions penalize predictions that deviate from the true values.
+- For continuous or count data, squared error loss and absolute error loss are common.
+- With binary data, a zero-one loss is frequently used.
+- However, these metrics are all focused on point estimates.
+
+## Distributional Loss Functions
+- If we think about outcomes distributionally, empirical coverage probability can be considered. For instance, our 95 % prediction intervals should, on average, have roughly 95 % coverage.
+- With interval predictions, the goal is to have a concentrated predictive distribution around the outcome.
+- The Continuous Rank Probability Score (CRPS) defined as 
+$$CRPS(F,y) = \int_{-\infty}^{\infty}\left(F(u) - 1(u \geq y) \right)^2 du,$$
+where $F$ is the CDF of the predictive distribution, is a metric that measures distance between an observed value and a distribution.
+
+## CRPS
+Consider four situations and sketch the predictive distribution and the resultant CRPS for each scenario. How does the MSE function in each setting?
+
+1. Narrow predictive interval centered around outcome.
+2. Wide predictive interval centered around outcome.
+3. Narrow predictictive interval with outcome in tail.
+4. Wide predictive interval with outcome in tail.
+
+# Model Comparison Exercise
+
+## Model Comparison Exercise
+
+1. Fit two regression model to subset of Seattle data
+2. Compute predictive distribution for different subset of Seattle data for two models
+3. Compute Mean Absolute Deviation from predictions across two models
+4. Compute CRPS for two models
+5. Make and communicate a decision
+
+```{r, eval = F}
+seattle <- read_csv('http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv')
+set.seed(02262019)
+train.id <- sample(nrow(seattle),700)
+train.set <- seattle %>% slice(train.id) %>% arrange(bedrooms, bathrooms)
+test.set <- seattle %>% slice((1:869)[!(1:869) %in% train.id]) %>% arrange(bedrooms, bathrooms)
+num.test <- nrow(test.set)
+```
+
+## 1. Fit Models
+
+For simplicity, we only consider two models for housing price:
+
+1. A regression model with a constant mean and
+2. a regression model using `sqft_living` and `waterfront`.
+
+
+```{r, eval = F}
+# Specify data for JAGS           
+data.in <- list(y = train.set$price, N = nrow(train.set))
+
+#Define Model
+regression1 <- "model{
+  # Likelihood
+  for(i in 1:N){
+    y[i]   ~ dnorm(mu[i], sigmasq.inv)
+    mu[i] <- alpha
+  }
+
+  # Priors
+  sigma <- 1 / sqrt(sigmasq.inv)
+  alpha ~ dnorm(0, 1.0E-12)
+  sigmasq.inv ~ dgamma(1E-6, 1E-6)
+}"
+
+# compile model
+model1 <- jags.model(textConnection(regression1), data = data.in)
+
+# burn in
+update(model1, 5000)
+
+# draw samples
+num.preds <- 1000
+samp1 <- coda.samples(model1, 
+        variable.names=c("alpha","sigma"), 
+        n.iter=num.preds)
+```
+
+```{r, eval = F}
+# Specify data for JAGS           
+data.in2 <- list(y = train.set$price, x.sqft = train.set$sqft_living, x.waterfront = train.set$waterfront, N = nrow(train.set))
+
+#Define Model
+regression2 <- "model{
+  # Likelihood
+  for(i in 1:N){
+    y[i]   ~ dnorm(mu[i], sigmasq.inv)
+    mu[i] <- alpha + beta[1] * x.sqft[i] + beta[2] * x.waterfront[i]
+  }
+
+  # Priors
+  sigma <- 1 / sqrt(sigmasq.inv)
+  alpha ~ dnorm(0, 1.0E-12)
+  beta[1] ~ dnorm(0, 1.0E-12)
+  beta[2] ~ dnorm(0, 1.0E-12)
+  sigmasq.inv ~ dgamma(1E-6, 1E-6)
+}"
+
+# compile model
+model2 <- jags.model(textConnection(regression2), data = data.in2)
+
+# burn in
+update(model2, 5000)
+
+# draw samples
+num.preds <- 1000
+samp2 <- coda.samples(model2, 
+        variable.names=c("alpha","sigma",'beta'), 
+        n.iter=num.preds)
+```
+
+## 2. Predictive Distribution
+
+Fit predictive distributions for these two models.
+
+```{r, eval = F}
+# create predictive distribution for model 1
+pred.samps1 <- rnorm(num.preds, mean = samp1[[1]][,'alpha'] , sd = samp1[[1]][,'sigma'])
+
+# create predictive distribution for model 2
+pred.samps2 <- matrix(0,nrow = num.test, ncol = num.preds)
+for (i in 1:num.test){
+  pred.samps2[i,] <- rnorm(num.preds, mean = samp2[[1]][,'alpha'] + samp2[[1]][,'beta[1]'] * test.set$sqft_living[i] + samp2[[1]][,'beta[2]'] * test.set$waterfront[i] , sd = samp2[[1]][,'sigma'])
+}
+```
+
+## 3. Compute MAD
+Compute Mean Absolute Deviation (MAD) from predictions across two models. You can use the posterior mean as your point estimates.
+
+```{r, eval = F}
+mod1.preds <- rep(mean(pred.samps1), num.test)
+mod2.preds <- rowMeans(pred.samps2)
+
+mean(abs(mod1.preds - test.set$price))
+mean(abs(mod2.preds - test.set$price))
+```
+
+
+## 4. Compute CRPS
+- Hint use: `scoringRules` package
+- [Package Overview](https://cran.r-project.org/web/packages/scoringRules/vignettes/gettingstarted.html)
+- `crps_sample()` can be used with data and draws from the posterior predictive distribution.
+
+```{r, eval = F}
+mean(crps_sample(y = test.set$price, dat = pred.samps2))
+mean(crps_sample(y = test.set$price, dat = matrix(pred.samps1, nrow=num.test, ncol=num.preds)))
+```
+
+
+
+## 5. Discuss Results
+So which model should we use? Why choose this model?
+
+## Information Based Criteria
+
+- We will discuss information based criteria as part of the areal data section.
+
